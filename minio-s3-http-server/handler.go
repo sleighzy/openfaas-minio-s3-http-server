@@ -56,13 +56,31 @@ func Handle(req handler.Request) (handler.Response, error) {
 
 	object, err := minioClient.GetObject(config.BucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
-		log.Fatalln(err)
+		log.Errorln(err)
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, err
 	}
 	defer object.Close()
 
 	content, err := ioutil.ReadAll(object)
 	if err != nil {
-		log.Fatalln(err)
+		log.Errorln(err)
+		errResponse := minio.ToErrorResponse(err)
+		switch errResponse.Code {
+		case "AccessDenied":
+			return handler.Response{
+				StatusCode: http.StatusUnauthorized,
+			}, nil
+		case "NoSuchBucket", "InvalidBucketName", "NoSuchKey":
+			return handler.Response{
+				StatusCode: http.StatusNotFound,
+			}, nil
+		default:
+			return handler.Response{
+				StatusCode: http.StatusInternalServerError,
+			}, err
+		}
 	}
 
 	return handler.Response{
