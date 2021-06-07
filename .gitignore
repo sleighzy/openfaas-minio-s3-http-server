@@ -2,4 +2,4 @@
 
 template/
 build/
-vendor/
+minio-s3-http-server/vendor/
