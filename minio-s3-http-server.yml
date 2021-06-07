@@ -1,0 +1,15 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  minio-s3-http-server:
+    lang: golang-http
+    handler: ./minio-s3-http-server
+    image: minio-s3-http-server:0.1.0
+    build_args:
+      GO111MODULE: on
+    environment:
+      S3_HTTP_DEBUG: true
+      S3_HTTP_LOG_LEVEL: debug
+      S3_HTTP_ENDPOINT: s3.mydomain.io
