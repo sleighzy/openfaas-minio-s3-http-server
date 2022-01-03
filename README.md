@@ -174,7 +174,7 @@ $ faas-cli deploy \
   --env S3_HTTP_ENDPOINT=s3.mydomain.io \
   --env S3_HTTP_BUCKET_NAME=website \
   --env S3_HTTP_ACCESS_KEY_ID=AKIYYYXXZZ7XXXZZ \
-  --env S3_HTTP_SECRET_ACCESS_KEY=wXXzzWWI/K7XXHM/bPxRfiCYDEXXQQQ
+  --env S3_HTTP_SECRET_ACCESS_KEY=wXXzzWWI/K7XXHM/bPxRfiCYDEXXQQQ \
   --env S3_HTTP_DEFAULT_PAGE=index.html
 
 Deployed. 202 Accepted.
