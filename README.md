@@ -80,10 +80,9 @@ This function uses additional Go libraries that need to be included as
 dependencies when building. See [GO - Dependencies] for options on including
 these dependencies. This repository uses [Go Modules] for managing dependencies.
 
-The below commands were run to initialize the `go.mod` and `go.sum` files, and
-the contents of the `go.mod` file put in the `GO_REPLACE.txt` file to be used
-during the build. These commands need to be run from within the
-`minio-s3-http-server` directory containing the function handler.
+The below commands were run to initialize the `go.mod` and `go.sum` files. These
+commands need to be run from within the `minio-s3-http-server` directory
+containing the function handler.
 
 ```sh
 $ cd minio-s3-http-server
@@ -97,7 +96,6 @@ go: finding module for package github.com/openfaas/templates-sdk/go-http
 go: found github.com/openfaas/templates-sdk/go-http in github.com/openfaas/templates-sdk v0.0.0-20200723110415-a699ec277c12
 
 $ go mod tidy
-$ cat go.mod > GO_REPLACE.txt
 ```
 
 When adding new libraries within your handler source code you will need to
@@ -106,7 +104,6 @@ update your Go dependencies.
 ```sh
 cd minio-s3-http-server
 go mod tidy
-cat go.mod > GO_REPLACE.txt
 ```
 
 ## Building the Function
@@ -140,11 +137,11 @@ docker buildx inspect --bootstrap
 
 Run the below command to use Buildx to create an image that supports both amd64
 and arm64 architectures, and push it to the registry. This sets the
-`GO111MODULE` build arg to `on` so that the `GO_REPLACE.txt` is used and the Go
-dependencies retrieved during the build process. Whilst the `GO111MODULE` entry
-can be added to the `slack.yml` file as per the OpenFaaS documentation this does
-not appear to be used when performing shrinkwrap builds, the argument must still
-be provided when running `docker buildx build`.
+`GO111MODULE` build arg to `on` so that the Go dependencies are retrieved during
+the build process. Whilst the `GO111MODULE` entry can be added to the
+`slack.yml` file as per the OpenFaaS documentation this does not appear to be
+used when performing shrinkwrap builds, the argument must still be provided when
+running `docker buildx build`.
 
 ```sh
 $ docker buildx build \
