@@ -1,12 +1,15 @@
 package function
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
 
 	handler "github.com/openfaas/templates-sdk/go-http"
 
 	minio "github.com/minio/minio-go"
+
+	credentials "github.com/minio/minio-go/pkg/credentials"
 
 	log "github.com/sirupsen/logrus"
 
@@ -45,7 +48,10 @@ func Handle(req handler.Request) (handler.Response, error) {
 		log.SetLevel(log.InfoLevel)
 	}
 
-	minioClient, err := minio.New(config.Endpoint, config.AccessKeyId, config.SecretAccessKey, config.UseSSL)
+	minioClient, err := minio.New(config.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(config.AccessKeyId, config.SecretAccessKey, ""),
+		Secure: config.UseSSL,
+	})
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -60,7 +66,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 		log.Debugf("Requested page: '%s'", objectName)
 	}
 
-	object, err := minioClient.GetObject(config.BucketName, objectName, minio.GetObjectOptions{})
+	object, err := minioClient.GetObject(context.Background(), config.BucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
 		log.Errorln(err)
 		return handler.Response{
