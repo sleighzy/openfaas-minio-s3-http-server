@@ -21,6 +21,7 @@ type Configuration struct {
 	AccessKeyId     string `required:"true" split_words:"true"`
 	SecretAccessKey string `required:"true" split_words:"true"`
 	UseSSL          bool   `default:"true" split_words:"true"`
+	DefaultPage     string `default:"index.html" split_words:"true"`
 }
 
 // Handle a function invocation
@@ -52,7 +53,12 @@ func Handle(req handler.Request) (handler.Response, error) {
 	log.Infof("%#v\n", minioClient)
 
 	objectName := req.QueryString
-	log.Debugf("Requested page: '%s'", objectName)
+	if objectName == "" {
+		objectName = config.DefaultPage
+		log.Debugf("No page requested, using default page: '%s'", objectName)
+	} else {
+		log.Debugf("Requested page: '%s'", objectName)
+	}
 
 	object, err := minioClient.GetObject(config.BucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {

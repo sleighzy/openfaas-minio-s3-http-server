@@ -175,6 +175,7 @@ $ faas-cli deploy \
   --env S3_HTTP_BUCKET_NAME=website \
   --env S3_HTTP_ACCESS_KEY_ID=AKIYYYXXZZ7XXXZZ \
   --env S3_HTTP_SECRET_ACCESS_KEY=wXXzzWWI/K7XXHM/bPxRfiCYDEXXQQQ
+  --env S3_HTTP_DEFAULT_PAGE=index.html
 
 Deployed. 202 Accepted.
 URL: https://gateway.mydomain.io/function/minio-s3-http-server
@@ -184,7 +185,8 @@ URL: https://gateway.mydomain.io/function/minio-s3-http-server
 
 Create an S3 bucket named `website` as per the value of the
 `S3_HTTP_BUCKET_NAME` environment variable above. Add an html page named
-`index.html` with the below content into this bucket.
+`index.html` with the below content into this bucket. The `./website/index.html`
+file can be used for this example.
 
 ```html
 <html>
@@ -193,6 +195,14 @@ Create an S3 bucket named `website` as per the value of the
   </body>
 </html>
 ```
+
+### Default page
+
+The `S3_HTTP_DEFAULT_PAGE` environment variable can be used to specify the
+default page that should be returned if one is not specified in the URL. This
+defaults to `index.html` if the environment variable is not set.
+
+## Invoking the Function
 
 Using the awesome [HTTPie] command-line HTTP client, an excellent replacement
 for `curl`, run the below command to invoke the function and request the
