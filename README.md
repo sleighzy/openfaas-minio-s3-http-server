@@ -23,7 +23,7 @@ registry with Kubernetes] for more information on this.
 Run the below command to create the Docker registry credentials secret in the
 `openfaas-fn` namespace.
 
-```sh
+```plain
 kubectl create secret docker-registry homelab-docker-registry \
   --docker-username=homelab-user \
   --docker-password=homelab-password \
@@ -36,7 +36,7 @@ Add the below yaml to the `default` service account in the `openfaas-fn`
 namespace so that it has the credentials to authenticate with the registry when
 pulling images.
 
-```sh
+```plain
 kubectl edit serviceaccount default -n openfaas-fn
 ```
 
@@ -52,14 +52,14 @@ The below steps were followed to create a new function and handler.
 Run the command below to pull the `golang-http` template that creates an HTTP
 request handler for Golang.
 
-```sh
+```plain
 faas-cli template store pull golang-http
 ```
 
 Run the command below to create the function definition files and empty function
 handler.
 
-```sh
+```plain
 $ faas new --lang golang-http minio-s3-http-server
 Folder: minio-s3-http-server created.
   ___                   _____           ____
@@ -84,7 +84,7 @@ The below commands were run to initialize the `go.mod` and `go.sum` files. These
 commands need to be run from within the `minio-s3-http-server` directory
 containing the function handler.
 
-```sh
+```plain
 $ cd minio-s3-http-server
 $ export GO111MODULE=on
 
@@ -101,7 +101,7 @@ $ go mod tidy
 When adding new libraries within your handler source code you will need to
 update your Go dependencies.
 
-```sh
+```plain
 cd minio-s3-http-server
 go mod tidy
 ```
@@ -119,7 +119,7 @@ build and deploy process is slightly different than a basic `faas-cli up`
 command. The below command will create a new directory containing the
 `Dockerfile` and artifacts that will be used to build the container image.
 
-```sh
+```plain
 faas-cli build --shrinkwrap -f minio-s3-http-server.yml
 ```
 
@@ -129,7 +129,7 @@ The below commands should only need to be run once but will create a new Docker
 build context for using with [Docker Buildx] to create images for multiple
 platforms.
 
-```sh
+```plain
 export DOCKER_CLI_EXPERIMENTAL=enabled
 docker buildx create --use --name=multiarch
 docker buildx inspect --bootstrap
@@ -143,7 +143,7 @@ the build process. Whilst the `GO111MODULE` entry can be added to the
 used when performing shrinkwrap builds, the argument must still be provided when
 running `docker buildx build`.
 
-```sh
+```plain
 $ docker buildx build \
  --build-arg GO111MODULE=on \
  --push \
@@ -156,7 +156,7 @@ $ docker buildx build \
 
 Run the below commands to point to the OpenFaaS gateway and authenticate.
 
-```sh
+```plain
 $ export OPENFAAS_URL=https://gateway.mydomain.io
 $ export PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
 
@@ -165,7 +165,7 @@ Calling the OpenFaaS server to validate the credentials...
 credentials saved for admin https://gateway.mydomain.io
 ```
 
-```sh
+```plain
 $ faas-cli deploy \
   --image registry.mydomain.io/openfaas/minio-s3-http-server:0.1.0 \
   --name minio-s3-http-server \
@@ -209,8 +209,9 @@ for `curl`, run the below command to invoke the function and request the
 `index.html` page. This will retrieve the page from the S3 bucket and output its
 contents.
 
-```sh
+```plain
 $ http https://gateway.mydomain.io/function/minio-s3-http-server?index.html
+
 HTTP/1.1 200 OK
 Content-Length: 60
 Content-Type: text/html; charset=utf-8
@@ -230,7 +231,7 @@ X-Start-Time: 1623055084985714841
 
 Run the below command to remove the function when it is no longer required.
 
-```sh
+```plain
 faas-cli remove minio-s3-http-server
 ```
 
