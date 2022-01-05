@@ -6,7 +6,7 @@ functions:
   minio-s3-http-server:
     lang: golang-http
     handler: ./minio-s3-http-server
-    image: minio-s3-http-server:0.1.0
+    image: minio-s3-http-server:latest
     build_args:
       GO111MODULE: on
     environment:
