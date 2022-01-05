@@ -14,6 +14,26 @@ I'll do that as a separate set of instructions later on. I essentially followed
 the directions from [OpenFaas Deployment] and used the awesome [Arkade] CLI
 installer for Kubernetes applications, plus some of the linked blog posts.
 
+### OpenFaaS MinIO S3 Credentials
+
+To access files from the bucket the function requires credentials to
+authenticate with MinIO. These need to be added as a secret in the `openfaas-fn`
+namespace so that it is available for use by the function. When the function is
+deployed the secrets will be mounted as files to
+`/var/openfaas/secrets/website-access-key-id` and
+`/var/openfaas/secrets/website-secret-access-key` and the values can be read by
+the function. See [OpenFaas Using secrets] for more information.
+
+```plain
+kubectl create secret generic website-access-key-id \
+  --from-literal website-access-key-id="GNxxxxxxx87" \
+  --namespace openfaas-fn
+
+kubectl create secret generic website-secret-access-key \
+  --from-literal website-secret-access-key="9BTxxxxxxxxxxxxxxxxxxxD4T" \
+  --namespace openfaas-fn
+```
+
 ## Private Docker Registry
 
 When deploying functions from a private registry OpenFaaS needs the credentials
@@ -173,9 +193,9 @@ $ faas-cli deploy \
   --env S3_HTTP_LOG_LEVEL=debug \
   --env S3_HTTP_ENDPOINT=s3.mydomain.io \
   --env S3_HTTP_BUCKET_NAME=website \
-  --env S3_HTTP_ACCESS_KEY_ID=AKIYYYXXZZ7XXXZZ \
-  --env S3_HTTP_SECRET_ACCESS_KEY=wXXzzWWI/K7XXHM/bPxRfiCYDEXXQQQ \
-  --env S3_HTTP_DEFAULT_PAGE=index.html
+  --env S3_HTTP_DEFAULT_PAGE=index.html \
+  --secret website-access-key-id \
+  --secret website-secret-access-key
 
 Deployed. 202 Accepted.
 URL: https://gateway.mydomain.io/function/minio-s3-http-server
