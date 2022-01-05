@@ -7,9 +7,9 @@ import (
 
 	handler "github.com/openfaas/templates-sdk/go-http"
 
-	minio "github.com/minio/minio-go"
+	minio "github.com/minio/minio-go/v7"
 
-	credentials "github.com/minio/minio-go/pkg/credentials"
+	credentials "github.com/minio/minio-go/v7/pkg/credentials"
 
 	log "github.com/sirupsen/logrus"
 
