@@ -4,6 +4,7 @@ import (
 	"context"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	handler "github.com/openfaas/templates-sdk/go-http"
 
@@ -17,14 +18,12 @@ import (
 )
 
 type Configuration struct {
-	Debug           bool   `default:"false"`
-	LogLevel        string `default:"info" split_words:"true"`
-	Endpoint        string `required:"true"`
-	BucketName      string `required:"true" split_words:"true"`
-	AccessKeyId     string `required:"true" split_words:"true"`
-	SecretAccessKey string `required:"true" split_words:"true"`
-	UseSSL          bool   `default:"true" split_words:"true"`
-	DefaultPage     string `default:"index.html" split_words:"true"`
+	Debug       bool   `default:"false"`
+	LogLevel    string `default:"info" split_words:"true"`
+	Endpoint    string `required:"true"`
+	BucketName  string `required:"true" split_words:"true"`
+	UseSSL      bool   `default:"true" split_words:"true"`
+	DefaultPage string `default:"index.html" split_words:"true"`
 }
 
 // Handle a function invocation
@@ -48,8 +47,42 @@ func Handle(req handler.Request) (handler.Response, error) {
 		log.SetLevel(log.InfoLevel)
 	}
 
+	var accessKeyIdBytes []byte
+	accessKeyIdBytes, err = ioutil.ReadFile("/var/openfaas/secrets/website-access-key-id")
+	if err != nil {
+		log.Fatal(err)
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, err
+	}
+
+	accessKeyId := strings.TrimSpace(string(accessKeyIdBytes))
+	if len(accessKeyId) == 0 {
+		log.Fatal("Missing access key id")
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, nil
+	}
+
+	var secretAccessKeyBytes []byte
+	secretAccessKeyBytes, err = ioutil.ReadFile("/var/openfaas/secrets/website-secret-access-key")
+	if err != nil {
+		log.Fatal(err)
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, err
+	}
+
+	secretAccessKey := strings.TrimSpace(string(secretAccessKeyBytes))
+	if len(secretAccessKey) == 0 {
+		log.Fatal("Missing secret access key")
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, nil
+	}
+
 	minioClient, err := minio.New(config.Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(config.AccessKeyId, config.SecretAccessKey, ""),
+		Creds:  credentials.NewStaticV4(accessKeyId, secretAccessKey, ""),
 		Secure: config.UseSSL,
 	})
 	if err != nil {

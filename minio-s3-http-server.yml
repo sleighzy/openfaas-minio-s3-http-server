@@ -13,3 +13,8 @@ functions:
       S3_HTTP_DEBUG: true
       S3_HTTP_LOG_LEVEL: debug
       S3_HTTP_ENDPOINT: s3.mydomain.io
+      S3_HTTP_BUCKET_NAME: website
+      S3_HTTP_DEFAULT_PAGE: index.html
+    secrets:
+      - website-access-key-id
+      - website-secret-access-key
