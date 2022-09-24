@@ -190,7 +190,7 @@ Run the below command to use Buildx to create an image that supports both amd64
 and arm64 architectures, and push it to the registry. This sets the
 `GO111MODULE` build arg to `on` so that the Go dependencies are retrieved during
 the build process. Whilst the `GO111MODULE` entry can be added to the
-`slack.yml` file as per the OpenFaaS documentation this does not appear to be
+`minio-s3-http-server.yml` file as per the OpenFaaS documentation this does not appear to be
 used when performing shrinkwrap builds, the argument must still be provided when
 running `docker buildx build`.
 
